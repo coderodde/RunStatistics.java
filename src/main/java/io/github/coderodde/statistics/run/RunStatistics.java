@@ -2,32 +2,31 @@ package io.github.coderodde.statistics.run;
 
 /**
  * This record class encapsulates the run statistics.
- * 
- * @author Rodion "rodde" Efremov
  */
-public final record RunStatistics(long minimumDuration,
-                                  long maximumDuration,
+public final record RunStatistics(double minimumDuration,
+                                  double maximumDuration,
                                   double meanDuration,
                                   double medianDuration,
-                                  double standardDeviation) {
+                                  double standardDeviation,
+                                  ConfidenceInterval confidenceInterval) {
     
     @Override
     public String toString() {
         return "min = %.6f seconds, max = %.6f seconds, " +
-               "mean = %.6f seconds, median = %.6f seconds, sd = %.6f seconds"
+               "mean = %.6f seconds, median = %.6f seconds, " + 
+               "sd = %.6f seconds, confidence interval " + 
+               "with significance level %f = %s"
                 .formatted(
                         seconds(minimumDuration),
                         seconds(maximumDuration),
                         seconds(meanDuration), 
                         seconds(medianDuration),
-                        seconds(standardDeviation));
-    }
-    
-    private static double seconds(long ns) {
-        return ns / 1_000_000_000.0;
+                        seconds(standardDeviation),
+                        confidenceInterval.significanceLevel(),
+                        confidenceInterval);
     }
     
     private static double seconds(double d) {
-        return d / 1_000_000_000.0;
+        return d / 1E9;
     }
 }

@@ -9,11 +9,13 @@ public class Demo {
     private static final Random RANDOM = new Random(13L);
     
     public static void main(String[] args) {
-        final RunStatistics runStatistics = Runner.measure(() -> {
+        Runnable r = () -> {
             try {
                 Thread.sleep(RANDOM.nextInt(100));
             } catch (InterruptedException ex) {}
-        }, 20);
+        };
+        
+        final RunStatistics runStatistics = Runner.measure(r, 20, 0.05);
         
         System.out.println(runStatistics);
     }
