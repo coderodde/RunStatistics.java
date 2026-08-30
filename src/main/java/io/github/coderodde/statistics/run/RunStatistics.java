@@ -1,5 +1,7 @@
 package io.github.coderodde.statistics.run;
 
+import java.text.NumberFormat;
+
 /**
  * This record class encapsulates the run statistics.
  */
@@ -10,23 +12,28 @@ public final record RunStatistics(double minimumDuration,
                                   double standardDeviation,
                                   ConfidenceInterval confidenceInterval) {
     
+    private static final NumberFormat NUMBER_FORMAT = 
+        NumberFormat.getInstance();
+    
     @Override
     public String toString() {
-        return "min = %.6f seconds, max = %.6f seconds, " +
-               "mean = %.6f seconds, median = %.6f seconds, " + 
-               "sd = %.6f seconds, confidence interval " + 
-               "with significance level %f = %s"
+        return ("min = %s seconds, max = %s seconds, " +
+                "mean = %s seconds, median = %s seconds, " + 
+                "sd = %s seconds, confidence interval " + 
+                "with significance level %s = [%s, %s] seconds")
                 .formatted(
                         seconds(minimumDuration),
                         seconds(maximumDuration),
                         seconds(meanDuration), 
                         seconds(medianDuration),
                         seconds(standardDeviation),
-                        confidenceInterval.significanceLevel(),
-                        confidenceInterval);
+                        NUMBER_FORMAT.format(
+                            confidenceInterval.significanceLevel()),
+                        seconds(confidenceInterval.lo()),
+                        seconds(confidenceInterval.hi()));
     }
     
-    private static double seconds(double d) {
-        return d / 1E9;
+    private static String seconds(double nanoseconds) {
+        return NUMBER_FORMAT.format(nanoseconds / 1E9);
     }
 }

@@ -15,10 +15,10 @@ public final class ConfidenceInterval {
     private final double hi;
     private final double significanceLevel;
     
-    private ConfidenceInterval(double lo, double hi, double confidenceLevel) {
+    private ConfidenceInterval(double lo, double hi, double significanceLevel) {
         this.lo = lo;
         this.hi = hi;
-        this.significanceLevel = confidenceLevel;
+        this.significanceLevel = significanceLevel;
     }
     
     public double lo() {
@@ -42,9 +42,10 @@ public final class ConfidenceInterval {
      * 
      * @return the confidence interval object.
      */
-    public static ConfidenceInterval of(List<Double> data, double significanceLevel) {
+    public static ConfidenceInterval of(List<Double> data, 
+                                        double significanceLevel) {
         validateData(data);
-        validateAlpha(significanceLevel);
+        Utils.validateSignificanceLevel(significanceLevel);
         
         double ybar = Utils.mean(data);
         double s    = Utils.std(data, ybar);
@@ -107,27 +108,6 @@ public final class ConfidenceInterval {
             }
             
             ++index;
-        }
-    }
-    
-    /**
-     * Makes sure the alpha value is within range {@code (0, 1)} and is not NaN.
-     * 
-     * @param alpha the alpha confidence level to validate. 
-     * @throws IllegalArgumentException if the alpha is NaN or outside the range
-     *         {@code (0, 1)}.
-     */
-    private static void validateAlpha(double alpha) {
-        if (Double.isNaN(alpha)) {
-            throw new IllegalArgumentException("The input alpha is NaN.");
-        }
-        
-        if (alpha <= 0.0 || alpha >= 1.0) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "The input alpha (%f) does not belong " + 
-                        "to the interval (0, 1).",
-                    alpha));
         }
     }
     

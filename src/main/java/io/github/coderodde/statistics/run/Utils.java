@@ -68,4 +68,28 @@ final class Utils {
             return data.get(data.size() / 2);
         }
     }
+    
+    
+    /**
+     * Makes sure the significance level is within the range {@code (0, 1)} and 
+     * is not NaN.
+     * 
+     * @param significanceLevel the significance level to validate. 
+     * 
+     * @throws IllegalArgumentException if the alpha is NaN or outside the range
+     *         {@code (0, 1)}.
+     */
+    static void validateSignificanceLevel(double significanceLevel) {
+        if (Double.isNaN(significanceLevel)) {
+            throw new IllegalArgumentException("The input significance level is NaN.");
+        }
+        
+        if (significanceLevel <= 0.0 || 1.0 <= significanceLevel) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "The input significance level (%f) does not belong " + 
+                        "to the interval (0, 1).",
+                    significanceLevel));
+        }
+    }
 }
