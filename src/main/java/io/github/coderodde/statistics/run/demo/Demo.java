@@ -12,10 +12,10 @@ public class Demo {
         Runnable r = () -> {
             try {
                 Thread.sleep(RANDOM.nextInt(100));
-            } catch (InterruptedException ex) {}
+            } catch (InterruptedException ignored) {}
         };
         
-        final RunStatistics runStatistics = Runner.measure(r, 20, 0.05);
+        final RunStatistics runStatistics = Runner.measure(r, 20, 0.01);
         
         System.out.println(runStatistics);
     }

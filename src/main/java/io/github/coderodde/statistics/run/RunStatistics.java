@@ -33,6 +33,13 @@ public final record RunStatistics(double minimumDuration,
                         seconds(confidenceInterval.hi()));
     }
     
+    /**
+     * Converts the number of nanoseconds to a string.
+     * 
+     * @param nanoseconds the number of nanoseconds.
+     * 
+     * @return the string representation.
+     */
     private static String seconds(double nanoseconds) {
         return NUMBER_FORMAT.format(nanoseconds / 1E9);
     }

@@ -7,13 +7,21 @@ import java.util.Objects;
 
 /**
  * This class provides methods for obtaining the running time statistics.
- * 
- * @author Rodion "rodde" Efremov
  */
 public final class Runner {
     
     private static final int MINIMUM_ITERATIONS = 5;
 
+    /**
+     * Measures the duration of {@code runnable} {@code iterations} times with
+     * given significance level for the confidence interval.
+     * 
+     * @param runnable          the runnable to measure.
+     * @param iterations        the number of times to iterate the runner.
+     * @param significanceLevel the significance level to use.
+     * 
+     * @return the record describing all the gathered statistics. 
+     */
     public static RunStatistics measure(final Runnable runnable, 
                                         final int iterations,
                                         final double significanceLevel) {
@@ -23,8 +31,6 @@ public final class Runner {
         checkSignificanceLevel(significanceLevel);
         
         double meanDuration = 0.0;
-        double medianDuration;
-        double standardDeviation;
         final List<Double> durations = new ArrayList<>(iterations);
         
         for (int iteration = 0;
@@ -42,8 +48,9 @@ public final class Runner {
         final double maximumDuration = durations.getLast();
         
         meanDuration /= iterations;
-        medianDuration    = Utils.median(durations);
-        standardDeviation = Utils.std(durations, meanDuration);
+        
+        final double medianDuration    = Utils.median(durations);
+        final double standardDeviation = Utils.std(durations, meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
             ConfidenceInterval.of(durations, significanceLevel);
@@ -56,6 +63,15 @@ public final class Runner {
                                  confidenceInterval);
     }
     
+    /**
+     * Measures the duration of all runnables in the {@code runnables} with
+     * given significance level for the confidence interval.
+     * 
+     * @param runnables         the list of runnables to measure.
+     * @param significanceLevel the significance level to use.
+     * 
+     * @return the record describing all the gathered statistics. 
+     */
     public static RunStatistics measure(final List<Runnable> runnables,
                                         final double significanceLevel) {
         
@@ -68,8 +84,6 @@ public final class Runner {
         checkSignificanceLevel(significanceLevel);
         
         double meanDuration = 0.0;
-        double medianDuration;
-        double standardDeviation;
         final List<Double> durations = new ArrayList<>(runnables.size());
         
         for (final Runnable runnable : runnables) {
@@ -85,8 +99,9 @@ public final class Runner {
         final double maximumDuration = durations.getLast();
         
         meanDuration /= runnables.size();
-        medianDuration    = Utils.median(durations);
-        standardDeviation = Utils.std(durations, meanDuration);
+        
+        final double medianDuration    = Utils.median(durations);
+        final double standardDeviation = Utils.std(durations, meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
             ConfidenceInterval.of(durations, significanceLevel);
@@ -100,6 +115,13 @@ public final class Runner {
         
     }
     
+    /**
+     * The actual method for measuring how much time passes in {@code runnable}.
+     * 
+     * @param runnable the runnable whose duration to measure.
+     * 
+     * @return the number of nanoseconds spent in the runnable.
+     */
     private static double measure(final Runnable runnable) {
         final long ta = System.nanoTime();
         runnable.run();
@@ -108,6 +130,11 @@ public final class Runner {
         return duration;
     }
     
+    /**
+     * Checks that the number of iterations is sufficient.
+     * 
+     * @param iterations the number of iterations.
+     */
     private static void checkIterations(final int iterations) {
         if (iterations < MINIMUM_ITERATIONS) {
             final String exceptionMessage = 
@@ -120,6 +147,11 @@ public final class Runner {
         }
     }
     
+    /**
+     * Checks that the input significance level is reasonable.
+     * 
+     * @param significanceLevel the significance level to check.
+     */
     private static void checkSignificanceLevel(final double significanceLevel) {
         if (Double.isNaN(significanceLevel)) {
             throw new IllegalArgumentException(

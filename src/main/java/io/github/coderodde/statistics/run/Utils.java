@@ -10,7 +10,6 @@ final class Utils {
     
     private Utils() {}
     
-    
     /**
      * Computes the mean value in {@code data}.
      * 
