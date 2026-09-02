@@ -13,9 +13,11 @@ public final class ConfidenceInterval {
     
     private final double lo;
     private final double hi;
-    private final double significanceLevel;
+    private final SignificanceLevel significanceLevel;
     
-    private ConfidenceInterval(double lo, double hi, double significanceLevel) {
+    private ConfidenceInterval(double lo, 
+                               double hi,
+                               SignificanceLevel significanceLevel) {
         this.lo = lo;
         this.hi = hi;
         this.significanceLevel = significanceLevel;
@@ -29,7 +31,7 @@ public final class ConfidenceInterval {
         return hi;
     }
     
-    public double significanceLevel() {
+    public SignificanceLevel significanceLevel() {
         return significanceLevel;
     }
     
@@ -43,12 +45,11 @@ public final class ConfidenceInterval {
      * @return the confidence interval object.
      */
     public static ConfidenceInterval of(List<Double> data, 
-                                        double significanceLevel) {
+                                        SignificanceLevel significanceLevel) {
         validateData(data);
-        Utils.validateSignificanceLevel(significanceLevel);
         
-        double ybar = Utils.mean(data);
-        double s    = Utils.std(data, ybar);
+        double mean = Mean.of(data);
+        double s    = StandardDeviation.of(data, mean);
         int    n    = data.size();
         
         // Get t-distribution (Student's distribution) with degree of freedom
@@ -57,12 +58,12 @@ public final class ConfidenceInterval {
         
         // LaTeX: t_{n - 1}(\alpha / 2):
         double tAlpha = tdist.inverseCumulativeProbability(
-            1.0 -  significanceLevel / 2.0);
+            1.0 -  significanceLevel.value() / 2.0);
         
         double intervalHalfDistance = tAlpha * s / Math.sqrt(n);
         
-        return new ConfidenceInterval(ybar - intervalHalfDistance, 
-                                      ybar + intervalHalfDistance,
+        return new ConfidenceInterval(mean - intervalHalfDistance, 
+                                      mean + intervalHalfDistance,
                                       significanceLevel);
     }
     

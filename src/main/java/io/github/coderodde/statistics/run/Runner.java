@@ -22,13 +22,13 @@ public final class Runner {
      * 
      * @return the record describing all the gathered statistics. 
      */
-    public static RunStatistics measure(final Runnable runnable, 
-                                        final int iterations,
-                                        final double significanceLevel) {
+    public static RunStatistics 
+        measure(final Runnable runnable, 
+                final int iterations,
+                final SignificanceLevel significanceLevel) {
         
         Objects.requireNonNull(runnable, "The input runnable is null");
         checkIterations(iterations);
-        checkSignificanceLevel(significanceLevel);
         
         double meanDuration = 0.0;
         final List<Double> durations = new ArrayList<>(iterations);
@@ -49,8 +49,9 @@ public final class Runner {
         
         meanDuration /= iterations;
         
-        final double medianDuration    = Utils.median(durations);
-        final double standardDeviation = Utils.std(durations, meanDuration);
+        final double medianDuration    = Median.of(durations);
+        final double standardDeviation = StandardDeviation.of(durations, 
+                                                              meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
             ConfidenceInterval.of(durations, significanceLevel);
@@ -72,16 +73,15 @@ public final class Runner {
      * 
      * @return the record describing all the gathered statistics. 
      */
-    public static RunStatistics measure(final List<Runnable> runnables,
-                                        final double significanceLevel) {
+    public static RunStatistics 
+        measure(final List<Runnable> runnables,
+                final SignificanceLevel significanceLevel) {
         
         Objects.requireNonNull(runnables, "The input runnables is null");
         
         if (runnables.isEmpty()) {
             throw new IllegalArgumentException("Nothing to measure");
         }
-        
-        checkSignificanceLevel(significanceLevel);
         
         double meanDuration = 0.0;
         final List<Double> durations = new ArrayList<>(runnables.size());
@@ -100,8 +100,9 @@ public final class Runner {
         
         meanDuration /= runnables.size();
         
-        final double medianDuration    = Utils.median(durations);
-        final double standardDeviation = Utils.std(durations, meanDuration);
+        final double medianDuration    = Median.of(durations);
+        final double standardDeviation = StandardDeviation.of(durations,
+                                                              meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
             ConfidenceInterval.of(durations, significanceLevel);
@@ -144,26 +145,6 @@ public final class Runner {
                                   MINIMUM_ITERATIONS);
             
             throw new IllegalArgumentException(exceptionMessage);
-        }
-    }
-    
-    /**
-     * Checks that the input significance level is reasonable.
-     * 
-     * @param significanceLevel the significance level to check.
-     */
-    private static void checkSignificanceLevel(final double significanceLevel) {
-        if (Double.isNaN(significanceLevel)) {
-            throw new IllegalArgumentException(
-                "The input significance level is NaN.");
-        }
-        
-        if (significanceLevel <= 0.0 || 1.0 <= significanceLevel) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "Bad significance level: %f. " + 
-                    "Must be within interval (0, 1):",
-                    significanceLevel));
         }
     }
 }

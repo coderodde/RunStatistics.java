@@ -2,6 +2,7 @@ package io.github.coderodde.statistics.run.demo;
 
 import io.github.coderodde.statistics.run.RunStatistics;
 import io.github.coderodde.statistics.run.Runner;
+import io.github.coderodde.statistics.run.SignificanceLevel;
 import java.util.Random;
 
 public class Demo {
@@ -15,7 +16,8 @@ public class Demo {
             } catch (InterruptedException ignored) {}
         };
         
-        final RunStatistics runStatistics = Runner.measure(r, 20, 0.01);
+        final RunStatistics runStatistics = 
+            Runner.measure(r, 20, new SignificanceLevel(0.01));
         
         System.out.println(runStatistics);
     }
