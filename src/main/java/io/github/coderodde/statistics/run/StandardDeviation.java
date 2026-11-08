@@ -11,7 +11,7 @@ public final class StandardDeviation {
         
     }
     
-    public static double of(List<Double> data, double mean) {
+    public static double of(List<Long> data, double mean) {
         double sum = 0.0;
         int n = data.size();
         

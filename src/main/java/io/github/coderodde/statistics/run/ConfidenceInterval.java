@@ -44,11 +44,11 @@ public final class ConfidenceInterval {
      * 
      * @return the confidence interval object.
      */
-    public static ConfidenceInterval of(List<Double> data, 
+    public static ConfidenceInterval of(List<Long> data, 
                                         SignificanceLevel significanceLevel) {
         validateData(data);
         
-        double mean = Mean.of(data);
+        double mean = (double) Mean.of(data);
         double s    = StandardDeviation.of(data, mean);
         int    n    = data.size();
         
@@ -74,7 +74,7 @@ public final class ConfidenceInterval {
      * @throws IllegalArgumentException if data list has less than 2 elements, 
      *         or one of elements is {@code null} or is not a real number.
      */
-    private static void validateData(List<Double> data)
+    private static void validateData(List<Long> data)
             throws IllegalArgumentException {
         
         Objects.requireNonNull(data, "The input data is null.");
@@ -89,23 +89,11 @@ public final class ConfidenceInterval {
         
         int index = 0;
         
-        for (Double y : data) {
-            Objects.requireNonNull(
-                y,
-                String.format("The input datum at index %d is null.", index));
-            
-            if (y.isNaN()) {
+        for (long y : data) {
+            if (y < 0L) {
                 throw new IllegalArgumentException(
-                    String.format("The input datum at index %d is NaN.", 
-                                  index));
-            }
-            
-            if (y.isInfinite()) {
-                throw new IllegalArgumentException(
-                    String.format(
-                        "The input datum at index %d is infinite in " + 
-                        "absolute value.",
-                            index));
+                    "Negative duration (%d) at index %d.".formatted(y, index)
+                );
             }
             
             ++index;

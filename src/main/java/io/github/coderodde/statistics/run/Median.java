@@ -12,7 +12,7 @@ public final class Median {
     
     }
     
-    public static double of(List<Double> data) {
+    public static long of(List<Long> data) {
         if (Objects.requireNonNull(data).isEmpty()) {
             throw new IllegalArgumentException(
                 "Can't compute the median of an empty list.");
@@ -21,7 +21,7 @@ public final class Median {
         if (data.size() % 2 == 0) {
             int index1 = data.size() / 2 - 1;
             int index2 = index1 + 1;
-            return (data.get(index1) + data.get(index2)) / 2.0;
+            return (data.get(index1) + data.get(index2)) / 2;
         } else {
             return data.get(data.size() / 2);
         }

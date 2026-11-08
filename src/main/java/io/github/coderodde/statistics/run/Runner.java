@@ -1,5 +1,6 @@
 package io.github.coderodde.statistics.run;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,36 +32,35 @@ public final class Runner {
         checkIterations(iterations);
         
         double meanDuration = 0.0;
-        final List<Double> durations = new ArrayList<>(iterations);
+        final List<Long> durations = new ArrayList<>(iterations);
         
-        for (int iteration = 0;
-                 iteration < iterations;
-                 iteration++) {
+        for (int i = 0; i < iterations; ++i) {
             
-            final double duration = measure(runnable);
+            final long duration = measure(runnable);
             meanDuration += duration;
             durations.add(duration);
         }
         
         Collections.sort(durations);
         
-        final double minimumDuration = durations.getFirst();
-        final double maximumDuration = durations.getLast();
+        final long minimumDuration = durations.getFirst();
+        final long maximumDuration = durations.getLast();
         
         meanDuration /= iterations;
         
-        final double medianDuration    = Median.of(durations);
+        final long medianDuration      = Median.of(durations);
         final double standardDeviation = StandardDeviation.of(durations, 
                                                               meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
-            ConfidenceInterval.of(durations, significanceLevel);
+            ConfidenceInterval.of(durations, 
+                                  significanceLevel);
         
-        return new RunStatistics(minimumDuration,
-                                 maximumDuration,
-                                 meanDuration, 
-                                 medianDuration,
-                                 standardDeviation,
+        return new RunStatistics(Duration.ofNanos(minimumDuration),
+                                 Duration.ofNanos(maximumDuration),
+                                 Duration.ofNanos((long) meanDuration), 
+                                 Duration.ofNanos(medianDuration),
+                                 Duration.ofNanos((long) standardDeviation),
                                  confidenceInterval);
     }
     
@@ -84,34 +84,34 @@ public final class Runner {
         }
         
         double meanDuration = 0.0;
-        final List<Double> durations = new ArrayList<>(runnables.size());
+        final List<Long> durations = new ArrayList<>(runnables.size());
         
         for (final Runnable runnable : runnables) {
             
-            final double duration = measure(runnable);
+            final long duration = measure(runnable);
             meanDuration += duration;
             durations.add(duration);
         }
         
         Collections.sort(durations);
         
-        final double minimumDuration = durations.getFirst();
-        final double maximumDuration = durations.getLast();
+        final long minimumDuration = durations.getFirst();
+        final long maximumDuration = durations.getLast();
         
         meanDuration /= runnables.size();
         
-        final double medianDuration    = Median.of(durations);
+        final long medianDuration    = Median.of(durations);
         final double standardDeviation = StandardDeviation.of(durations,
                                                               meanDuration);
         
         final ConfidenceInterval confidenceInterval = 
             ConfidenceInterval.of(durations, significanceLevel);
         
-        return new RunStatistics(minimumDuration,
-                                 maximumDuration,
-                                 meanDuration, 
-                                 medianDuration,
-                                 standardDeviation,
+        return new RunStatistics(Duration.ofNanos(minimumDuration),
+                                 Duration.ofNanos(maximumDuration),
+                                 Duration.ofNanos((long) meanDuration), 
+                                 Duration.ofNanos(medianDuration),
+                                 Duration.ofNanos((long) standardDeviation),
                                  confidenceInterval);
         
     }
@@ -123,7 +123,7 @@ public final class Runner {
      * 
      * @return the number of nanoseconds spent in the runnable.
      */
-    private static double measure(final Runnable runnable) {
+    private static long measure(final Runnable runnable) {
         final long ta = System.nanoTime();
         runnable.run();
         final long tb = System.nanoTime();

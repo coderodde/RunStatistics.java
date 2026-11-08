@@ -1,13 +1,15 @@
 package io.github.coderodde.statistics.run;
 
+import java.time.Duration;
+
 /**
  * This record class encapsulates the run statistics.
  */
-public final record RunStatistics(double minimumDuration,
-                                  double maximumDuration,
-                                  double meanDuration,
-                                  double medianDuration,
-                                  double standardDeviation,
+public final record RunStatistics(Duration minimumDuration,
+                                  Duration maximumDuration,
+                                  Duration meanDuration,
+                                  Duration medianDuration,
+                                  Duration standardDeviation,
                                   ConfidenceInterval confidenceInterval) {
     
     @Override
@@ -17,14 +19,18 @@ public final record RunStatistics(double minimumDuration,
                 "sd = %.6f seconds, significance level = %.3f, " + 
                 "confidence interval = [%.6f, %.6f] seconds")
                 .formatted(
-                        seconds(minimumDuration),
-                        seconds(maximumDuration),
-                        seconds(meanDuration), 
-                        seconds(medianDuration),
-                        seconds(standardDeviation),
+                        durationToSeconds(minimumDuration),
+                        durationToSeconds(maximumDuration),
+                        durationToSeconds(meanDuration), 
+                        durationToSeconds(medianDuration),
+                        durationToSeconds(standardDeviation),
                         confidenceInterval.significanceLevel().value(),
                         seconds(confidenceInterval.lo()),
                         seconds(confidenceInterval.hi()));
+    }
+    
+    private static double durationToSeconds(Duration d) {
+        return d.toNanos() / 1E9;
     }
     
     /**

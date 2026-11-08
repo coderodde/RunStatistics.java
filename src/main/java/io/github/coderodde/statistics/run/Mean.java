@@ -9,7 +9,7 @@ public final class Mean {
     
     private Mean() {}
     
-    public static double of(List<Double> data) {
+    public static double of(List<Long> data) {
         double sum = 0.0;
         
         for (double y : data) {
