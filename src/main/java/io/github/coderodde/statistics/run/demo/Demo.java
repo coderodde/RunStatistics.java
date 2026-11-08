@@ -1,7 +1,6 @@
 package io.github.coderodde.statistics.run.demo;
 
-import io.github.coderodde.statistics.run.RunStatistics;
-import io.github.coderodde.statistics.run.Runner;
+import io.github.coderodde.statistics.run.BenchmarkRunner;
 import io.github.coderodde.statistics.run.SignificanceLevel;
 import java.util.Random;
 
@@ -16,9 +15,11 @@ public class Demo {
             } catch (InterruptedException ignored) {}
         };
         
-        final RunStatistics runStatistics = 
-            Runner.measure(r, 20, new SignificanceLevel(0.01));
+        BenchmarkRunner runner = 
+            new BenchmarkRunner(new SignificanceLevel(0.01));
         
-        System.out.println(runStatistics);
+        runner.measure(r, 20);
+        
+        System.out.println(runner.getBenchmarkSummary());
     }
 }

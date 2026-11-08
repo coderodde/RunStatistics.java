@@ -5,12 +5,12 @@ import java.time.Duration;
 /**
  * This record class encapsulates the run statistics.
  */
-public final record RunStatistics(Duration minimumDuration,
-                                  Duration maximumDuration,
-                                  Duration meanDuration,
-                                  Duration medianDuration,
-                                  Duration standardDeviation,
-                                  ConfidenceInterval confidenceInterval) {
+public final record BenchmarkSummary(Duration minimumDuration,
+                                     Duration maximumDuration,
+                                     Duration meanDuration,
+                                     Duration medianDuration,
+                                     Duration standardDeviation,
+                                     ConfidenceInterval confidenceInterval) {
     
     @Override
     public String toString() {
@@ -33,13 +33,6 @@ public final record RunStatistics(Duration minimumDuration,
         return d.toNanos() / 1E9;
     }
     
-    /**
-     * Converts the number of nanoseconds to a string.
-     * 
-     * @param nanoseconds the number of nanoseconds.
-     * 
-     * @return the string representation.
-     */
     private static double seconds(double nanoseconds) {
         return nanoseconds / 1E9;
     }
