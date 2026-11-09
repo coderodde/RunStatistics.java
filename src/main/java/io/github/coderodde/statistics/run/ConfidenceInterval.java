@@ -2,9 +2,6 @@ package io.github.coderodde.statistics.run;
 
 import org.apache.commons.statistics.distribution.TDistribution;
 
-import java.util.List;
-import java.util.Objects;
-
 /**
  * This class implements confidence intervals for data with unknown mean and
  * variance.
@@ -39,18 +36,15 @@ public final class ConfidenceInterval {
      * This method computes the {@code alpha}-confidence interval for the input
      * data {@code data} where mean and variance are not known.
      * 
-     * @param data              the input data.
-     * @param significanceLevel the significance level.
+     * @param statisticalSample
      * 
      * @return the confidence interval object.
      */
-    public static ConfidenceInterval of(List<Long> data, 
-                                        SignificanceLevel significanceLevel) {
-        validateData(data);
+    public static ConfidenceInterval of(StatisticalSample statisticalSample) {
         
-        double mean = (double) Mean.of(data);
-        double s    = StandardDeviation.of(data, mean);
-        int    n    = data.size();
+        double mean = statisticalSample.mean();
+        double s    = statisticalSample.std();
+        int    n    = statisticalSample.size();
         
         // Get t-distribution (Student's distribution) with degree of freedom
         // n - 1:
@@ -58,46 +52,13 @@ public final class ConfidenceInterval {
         
         // LaTeX: t_{n - 1}(\alpha / 2):
         double tAlpha = tdist.inverseCumulativeProbability(
-            1.0 -  significanceLevel.value() / 2.0);
+            1.0 -  statisticalSample.getSignificanceLevel().value() / 2.0);
         
         double intervalHalfDistance = tAlpha * s / Math.sqrt(n);
         
         return new ConfidenceInterval(mean - intervalHalfDistance, 
                                       mean + intervalHalfDistance,
-                                      significanceLevel);
-    }
-    
-    /**
-     * Makes sure that the input data is valid.
-     * 
-     * @param data the input data to validate.
-     * @throws IllegalArgumentException if data list has less than 2 elements, 
-     *         or one of elements is {@code null} or is not a real number.
-     */
-    private static void validateData(List<Long> data)
-            throws IllegalArgumentException {
-        
-        Objects.requireNonNull(data, "The input data is null.");
-        
-        if (data.size() < 2) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "The input data set is too small: %d elements. " + 
-                    "Must be at least 2.", 
-                        data.size()));
-        }
-        
-        int index = 0;
-        
-        for (long y : data) {
-            if (y < 0L) {
-                throw new IllegalArgumentException(
-                    "Negative duration (%d) at index %d.".formatted(y, index)
-                );
-            }
-            
-            ++index;
-        }
+                                      statisticalSample.getSignificanceLevel());
     }
     
     @Override
